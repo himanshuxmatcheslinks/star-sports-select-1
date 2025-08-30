@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Star Sports 1</title>
+  <title>Star Sports Select HD 1</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
   <style>
@@ -39,7 +39,7 @@
 </head>
 <body>
   <div class="shaka-video-container" data-shaka-player>
-    <video autoplay playsinline preload="metadata"></video>
+<video autoplay playsinline preload="metadata" poster="https"></video>
   </div>
 
   <script>
@@ -77,11 +77,11 @@
 
       let drmConfig = {
         clearKeys: {
-          "df20894ec30954d3b28097c138f4cfda": "ff9b6292b1cddbd11a046029cb314634"
+          "c2c048e439d65316beeda6ef64d5d0f8": "e2fdc132cbdee65501b845ce414fce39"
         }
       };
-      let cookieHeader = "__hdnea__=st=1753828013~exp=1753914413~acl=/*~hmac=69c9fab1439ac3a792d07718b8f808c77c65f88b0b9ff04ac089536c005d38f9";
-      let streamUrl = "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_1_BTS/output/index.mpd";
+      let cookieHeader = "__hdnea__=st=1750159300~exp=1750245700~acl=/*~hmac=dc9aefe01d42aec99a9cf17876cc0bc115ce2a38f69131a022c2a0f0563a9487";
+      let streamUrl = "https://jiotvmblive.cdn.jio.com/bpk-tv/Star_Sports_Select_HD_1_BTS/output/index.mpd";
 
       try {
         const response = await fetch('https://raw.githubusercontent.com/alex4528/m3u/refs/heads/main/jstar.m3u');
@@ -89,24 +89,15 @@
         const lines = m3uText.split('\n');
 
         for (let i = 0; i < lines.length; i++) {
-          if (lines[i].includes('Star Sports 1')) {
-            const clearKeyLine = lines[i + 1];
-            const clearKeyMatch = clearKeyLine.match(/license_key=([^:]+):([a-f0-9]+)/);
-            if (clearKeyMatch) {
-              drmConfig.clearKeys = {
-                [clearKeyMatch[1]]: clearKeyMatch[2]
-              };
-            }
-            const cookieLine = lines.find(line => line.startsWith('#EXTHTTP:'));
-            if (cookieLine) {
-              const cookieMatch = cookieLine.match(/"cookie":"([^"]+)"/);
-              if (cookieMatch) {
-                cookieHeader = cookieMatch[1];
+          if (lines[i].includes('Star_Sports_HD1')) {
+            for (let j = i - 1; j >= 0; j--) {
+              if (lines[j].startsWith('#EXTHTTP:')) {
+                const cookieMatch = lines[j].match(/"cookie":"([^"]+)"/);
+                if (cookieMatch) {
+                  cookieHeader = cookieMatch[1];
+                }
+                break;
               }
-            }
-            const urlLine = lines.find(line => line.includes('Star Sports 1') && line.includes('.mpd'));
-            if (urlLine) {
-              streamUrl = urlLine.split('&xxx=')[0];
             }
             break;
           }
@@ -145,9 +136,11 @@
         request.headers['User-Agent'] = "plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
         request.headers['Cookie'] = cookieHeader;
 
-        if ((type === shaka.net.NetworkingEngine.RequestType.MANIFEST ||
-             type === shaka.net.NetworkingEngine.RequestType.SEGMENT) &&
-            request.uris[0] && !request.uris[0].includes('__hdnea__=')) {
+        if (
+          (type === shaka.net.NetworkingEngine.RequestType.MANIFEST ||
+            type === shaka.net.NetworkingEngine.RequestType.SEGMENT) &&
+          request.uris[0] && !request.uris[0].includes('__hdnea__=')
+        ) {
           const separator = request.uris[0].includes('?') ? '&' : '?';
           request.uris[0] += separator + cookieHeader;
         }
